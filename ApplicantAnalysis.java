@@ -1,17 +1,19 @@
+/*
+ ============================================================================
+ Name        : ApplicantAnalysis.java
+ Author      : Roisin Mitchell
+ ID          : 21193762
+ Description : Created methods to calculate candidate points and select
+               students based off a points cutoff
+ ============================================================================
+
+ */
+
+import java.lang.reflect.Array;
 import java.util.*;
 import java.io.*;
 
-/*
- * This program reads applicant grades from a CSV (Comma Separated Values) file and calculates
- * each applicants points total. To use the program you need to specify the CSV filename and the
- * cutoff value. Use the following format
- *
- *             ApplicantAnalysis filepath cutoff
- *
- * If the filepath contains spaces then enclose it in quotation marks (e.g. "The filename has spaces.CSV").
- */
 public class ApplicantAnalysis {
-
     public static void main(String[] args) {
         if(args.length == 2) {
             // File containg applicant information
@@ -26,6 +28,8 @@ public class ApplicantAnalysis {
                 // Uses LinkedList toString method to display list of successful applicantNumbers
                 if(chosenApplicants != null) {
                     System.out.println(chosenApplicants);
+                    //**** Must changes these outcomes to fit the csv files and the cutoff point parameter
+                    //*** For this test to work the specific csv file is needed and the cutoff point should be 350
                     String expectedOutput = "[21219388, 21236556, 21270186, 21321912, 21483698, 21497189, 21745566, 21767774, 21803928, 21905621, 21942586]";
                     if(chosenApplicants.toString().compareTo(expectedOutput) != 0) {
                         System.out.println("Output is NOT correct");
@@ -84,11 +88,65 @@ public class ApplicantAnalysis {
         }
     }
     static LinkedList<String> select(TreeMap<String,Integer> candidateScores, int cutoff){
-        return new LinkedList<>();
+        LinkedList<String> successfulApplicants = new LinkedList<>();
+
+        Set<String> keys =  candidateScores.keySet();
+        Iterator<String> iterator = keys.iterator();
+
+        int score = 0;
+        String applicant = "";
+
+
+        for(int i = 0; i <= keys.size()-1; i++){
+            applicant = iterator.next();
+            score = candidateScores.get(applicant);
+
+            //Used for testing the method
+            //System.out.println(applicant +  " Score: " + score);
+
+            if(score >= cutoff){
+                successfulApplicants.add(applicant);
+            }
+        }
+
+        return successfulApplicants;
     }
 
     static int pointsScore(String[] subjectGrades) {
-        return 0;
+        int pointsTotal = 0;
+
+        ArrayList<Integer> points = new ArrayList<Integer>();
+
+        HashMap<String, Integer> gradeScheme = new HashMap<String, Integer>();
+        gradeScheme.put("H1", 100);
+        gradeScheme.put("H2", 88);
+        gradeScheme.put("H3", 77);
+        gradeScheme.put("H4", 66);
+        gradeScheme.put("H5", 56);
+        gradeScheme.put("H6", 46);
+        gradeScheme.put("H7", 37);
+        gradeScheme.put("H8", 0);
+        gradeScheme.put("O1", 56);
+        gradeScheme.put("O2", 46);
+        gradeScheme.put("O3", 37);
+        gradeScheme.put("O4", 28);
+        gradeScheme.put("O5", 20);
+        gradeScheme.put("O6", 12);
+        gradeScheme.put("O7", 0);
+        gradeScheme.put("O8", 0);
+
+
+        for (int i = 0; i < subjectGrades.length; i++) {
+            points.add(i, gradeScheme.get(subjectGrades[i]));
+        }
+
+        points.sort(Comparator.reverseOrder()); //Descending order, the highest grade to lowest
+
+
+        for (int i = 0; i < 6; i++) {
+            pointsTotal = pointsTotal + points.get(i); //Adding only top 6
+        }
+        return pointsTotal;
     }
 
 }
